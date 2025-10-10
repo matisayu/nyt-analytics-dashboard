@@ -1,12 +1,12 @@
-import requests, os
-from dotenv import load_dotenv
+from app.db import init_db, engine, get_session
+from app.nyt_client import fetch_most_popular, store_stories
+from sqlmodel import Session
 
-load_dotenv()
-API_KEY = os.getenv("NYT_API_KEY")
-period = 1
-url = f"https://api.nytimes.com/svc/mostpopular/v2/viewed/{period}.json"
+def main():
+    init_db()
+    with Session(engine) as session:
+        stories = fetch_most_popular()
+        store_stories(session, stories)
 
-res = requests.get(url, params={"api-key": API_KEY})
-data = res.json()
-
-print(len(data["results"]), "articles fetched")
+if __name__ == "__main__":
+    main()
