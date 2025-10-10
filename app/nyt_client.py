@@ -9,20 +9,21 @@ import json
 load_dotenv()
 API_KEY = os.getenv("NYT_API_KEY")
 
-def fetch_most_popular() -> list[dict]:
-    url = f"https://api.nytimes.com/svc/mostpopular/v2/viewed/7.json?api-key={API_KEY}"
+def fetch_most_popular(api_window: str) -> list[dict]:
+    url = f"https://api.nytimes.com/svc/mostpopular/v2/viewed/{api_window}.json?api-key={API_KEY}"
     resp = requests.get(url)
     resp.raise_for_status()
     data = resp.json()
     return data["results"]
 
-def store_stories(session: Session, stories_data: list[dict]):
+def store_stories(session: Session, stories_data: list[dict], api_window: str):
     new_count = 0
+    updated_count = 0
 
     for item in stories_data:
         title = item.get("title")
         if not title:
-            continue  # skip malformed data
+            continue  
 
         # Check if story already exists (by title)
         existing_story = session.exec(
@@ -30,13 +31,20 @@ def store_stories(session: Session, stories_data: list[dict]):
         ).first()
 
         if existing_story:
-            continue  # skip duplicate
+            # Update popularity windows if this window is not already included
+            windows = json.loads(existing_story.popularity_windows or "[]")
+            if api_window not in windows:
+                windows.append(api_window)
+                existing_story.popularity_windows = json.dumps(windows)
+                updated_count += 1
+            continue  # skip creating a new record
 
         # Create a new PopStory entry
         story = PopStory(
             title=title,
             published_date=item.get("published_date"),
             date_collected=datetime.now().strftime("%Y-%m-%d"),
+            popularity_windows=json.dumps([api_window])
         )
         story.set_facets(item.get("geo_facet", []), item.get("des_facet", []))
 
@@ -44,9 +52,10 @@ def store_stories(session: Session, stories_data: list[dict]):
         new_count += 1
 
     session.commit()
-    print(f"Stored {new_count} new stories (skipped {len(stories_data) - new_count} duplicates)")
-
-
+    print(
+        f"Stored {new_count} new stories, updated {updated_count} existing stories "
+        f"(skipped {len(stories_data) - new_count - updated_count} duplicates)"
+    )
 
 
 #arts, automobiles, books/review, business, fashion, food, health, home, insider, magazine,
