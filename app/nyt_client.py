@@ -43,10 +43,12 @@ def store_stories(session: Session, stories_data: list[dict], api_window: str):
         story = PopStory(
             title=title,
             published_date=item.get("published_date"),
+            url = item.get("url"),
+            section = item.get("section"),
             date_collected=datetime.now().strftime("%Y-%m-%d"),
             popularity_windows=json.dumps([api_window])
         )
-        story.set_facets(item.get("geo_facet", []), item.get("des_facet", []))
+        story.set_facets(item.get("geo_facet", []), item.get("des_facet", []), item.get("org_facet", []))
 
         session.add(story)
         new_count += 1
