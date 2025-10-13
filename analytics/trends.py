@@ -28,7 +28,6 @@ def aggregate_popular_stats(session: Session):
     """
     today = datetime.now().strftime("%Y-%m-%d")
 
-    # Get all stories
     stories = session.exec(select(PopStory)).all()
     if not stories:
         print("No stories found to aggregate.")
@@ -41,15 +40,12 @@ def aggregate_popular_stats(session: Session):
     for story in stories:
         windows = json.loads(story.popularity_windows or "[]")
         for api_window in windows:
-            # Init counters if needed
+
             window_section_counts.setdefault(api_window, Counter())
             window_keyword_counts.setdefault(api_window, Counter())
 
-            # Increment section count
             if story.section:
                 window_section_counts[api_window][story.section] += 1
-
-            # Increment keywords (des_facet)
             try:
                 desc_facets = json.loads(story.desc_facet or "[]")
             except json.JSONDecodeError:

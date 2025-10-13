@@ -1,4 +1,9 @@
 venv\Scripts\activate.bat
 CTRL Shift P = 
 install to venv = 'venv\Scripts\python.exe -m pip install python-dotenv'
-run from venv = 'venv\Scripts\python.exe -m app.main'
+Run PopStory daily schedule = 'venv\Scripts\python.exe -m app.main'
+
+
+Run analytics = 'venv\Scripts\python.exe -m analytics.analytics_runner'
+
+Run visualization = 'venv\Scripts\python.exe -m app.visualize'

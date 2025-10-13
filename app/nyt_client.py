@@ -6,6 +6,9 @@ from sqlmodel import Session, select
 from app.models import PopStory
 import json
 
+# Map API windows to NYT parameter values
+WINDOW_MAP = {"1d": 1, "7d": 7, "30d": 30}
+
 load_dotenv()
 API_KEY = os.getenv("NYT_API_KEY")
 
@@ -59,7 +62,16 @@ def store_stories(session: Session, stories_data: list[dict], api_window: str):
         f"(skipped {len(stories_data) - new_count - updated_count} duplicates)"
     )
 
-
+def fetch_and_store_all_windows(session: Session):
+    """Fetch & store stories for all time windows."""
+    for key, value in WINDOW_MAP.items():
+        print(f"\nFetching {value} stories...")
+        stories_data = fetch_most_popular(api_window=value)
+        store_stories(session, stories_data, api_window=key)
+        
+        
+        
+        
 #arts, automobiles, books/review, business, fashion, food, health, home, insider, magazine,
 # movies, nyregion, obituaries, opinion, politics, realestate, science, sports, sundayreview, technology, theater, t-magazine, travel, upshot, us, world
 #section = "nyregion"
