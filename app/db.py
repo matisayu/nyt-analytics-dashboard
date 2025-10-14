@@ -1,9 +1,11 @@
 import sys
-print("Running Python from:", sys.executable)
+import os
 from sqlmodel import SQLModel, create_engine, Session
 from contextlib import contextmanager
+from dotenv import load_dotenv
 
-DATABASE_URL = "sqlite:///./nyt.db"
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL, echo=False)
 
 # Ensure tables exist before aggregation
