@@ -10,3 +10,5 @@ Run visualization = 'venv\Scripts\python.exe -m app.visualize'
 
 Run local API = 'venv\Scripts\python.exe -m uvicorn app.api.server:app --reload'
  - then go to 'http://127.0.0.1:8000/docs' for API endpoints
+
+Run local React = 'npm run dev' from frontend/nyt-dashboard

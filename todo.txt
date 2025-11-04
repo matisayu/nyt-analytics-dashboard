@@ -1,3 +1,6 @@
 SectionStats
 * Calculate differences between multiple 7 day entries with different "date_collected" windows,
   visualize with line charts that shows when sections trend up or down
+
+Architecture Planning
+* Frontend: React + Vite + Tailwind + Shadcn UI 
