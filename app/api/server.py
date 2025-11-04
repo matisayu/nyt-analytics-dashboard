@@ -2,8 +2,10 @@ from fastapi import FastAPI, Depends
 from sqlmodel import Session, select
 from app.db import engine, session_context
 from app.models import SectionStat, KeywordStat, PopStory
+from app.api.routes import sections
 
 app = FastAPI(title="NYT Analytics API")
+app.include_router(sections.router)
 
 def get_session():
     with Session(engine) as session:
