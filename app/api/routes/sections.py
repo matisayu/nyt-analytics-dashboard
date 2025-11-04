@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from app.api.db import get_session
+from app.db import get_session
 from app.models import SectionStat
 
 router = APIRouter(prefix="/sections", tags=["Sections"])
