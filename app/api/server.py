@@ -1,10 +1,25 @@
 from fastapi import FastAPI, Depends
 from sqlmodel import Session, select
+from fastapi.middleware.cors import CORSMiddleware
 from app.db import engine, session_context
 from app.models import SectionStat, KeywordStat, PopStory
 from app.api.routes import sections
 
 app = FastAPI(title="NYT Analytics API")
+
+
+origins = [
+    "http://localhost:5173", #dev
+    "", #prod
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(sections.router)
 
 def get_session():
